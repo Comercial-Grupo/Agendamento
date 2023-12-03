@@ -9,6 +9,7 @@ from datetime import datetime
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+from apscheduler.schedulers.background import BackgroundScheduler
 
 # Inicialização e Configuração
 DETA_PROJECT_KEY = st.secrets["sua_project_key"]
@@ -16,6 +17,8 @@ whatsapp_token = st.secrets["seu_token_whatsapp"]
 deta = Deta(DETA_PROJECT_KEY)
 db = deta.Base("tasks")
 fuso_horario_desejado = pytz.timezone("America/Sao_Paulo")
+scheduler = BackgroundScheduler()
+scheduler.start()
 
 # Função para enviar mensagens para o WhatsApp
 def send_link(recipient, token, message):
@@ -66,7 +69,7 @@ def agendar_tarefa(horario, task_id):
     try:
         horario_local = fuso_horario_desejado.localize(datetime.strptime(horario, "%H:%M"))
         horario_utc = horario_local.astimezone(pytz.utc)
-        schedule.every().day.at(horario_utc.strftime("%H:%M")).do(send_scheduled_message, task_id=task_id)
+        scheduler.add_job(send_scheduled_message, 'cron', day_of_week='mon-sun', hour=horario_utc.hour, minute=horario_utc.minute, args=[task_id])
     except ValueError as e:
         print(f"Erro ao converter o horário: {e}")
 
