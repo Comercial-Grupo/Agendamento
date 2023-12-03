@@ -76,7 +76,7 @@ st.title("Agendador de Tarefas")
 # Formulário para agendar tarefas
 with st.form("task_form"):
     description = st.text_input("Descrição da Tarefa")
-    task_time = st.time_input("Horário da Tarefa")
+    task_time = st.time_input("Horário da Tarefa", step=0:05:00)
     email = st.text_input("E-mail")
     whatsapp = st.text_input("Número do WhatsApp")
     token = st.text_input("Token do WhatsApp", type="password")
