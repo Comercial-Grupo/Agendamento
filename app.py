@@ -24,7 +24,9 @@ def send_link(recipient, token, message):
     if response.status_code == 200:
         return response.text
     else:
-        return {"error": f"Request failed with status code {response.status_code}"
+        return {"error": f"Request failed with status code {response.status_code}"}
+        # Faltava fechar o parêntese aqui
+
 
     # ... (código da função)
 
