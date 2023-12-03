@@ -4,6 +4,8 @@ import schedule
 import time
 import threading
 import requests
+import pytz
+
 
 # Inicialize o Deta com sua Project Key
 DETA_PROJECT_KEY = st.secrets["sua_project_key"]
