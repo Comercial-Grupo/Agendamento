@@ -27,7 +27,29 @@ def agendar_tarefa(horario, task_id):
         print(f"Erro ao converter o horário: {e}")
 
 
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
+def enviar_email(outlook_email, senha, destinatario, assunto, corpo):
+    try:
+        msg = MIMEMultipart()
+        msg['From'] = outlook_email
+        msg['To'] = destinatario
+        msg['Subject'] = assunto
+
+        msg.attach(MIMEText(corpo, 'plain'))
+
+        server = smtplib.SMTP('smtp.office365.com', 587)
+        server.starttls()
+        server.login(outlook_email, senha)
+        text = msg.as_string()
+        server.sendmail(outlook_email, destinatario, text)
+        server.quit()
+        return "E-mail enviado com sucesso!"
+    except Exception as e:
+        return f"Erro ao enviar e-mail: {e}"
+    
 
 
 
