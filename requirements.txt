@@ -2,4 +2,4 @@ streamlit
 deta
 requests
 schedule
-pytz
+pytz==2022.1
