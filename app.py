@@ -53,7 +53,7 @@ def enviar_email(outlook_email, senha, destinatario, assunto, corpo):
 def send_scheduled_message(task_id):
     task = db.get(task_id)
     if task:
-        send_link(task["whatsapp"], whatsapp_token, f"Lembrete da Tarefa: {task['description']}")
+        send_link(task["whatsapp"], task["token"], f"Lembrete da Tarefa: {task['description']}")
 
 # Função para agendar tarefas
 def schedule_task():
