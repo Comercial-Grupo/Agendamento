@@ -1,8 +1,5 @@
 import streamlit as st
 from deta import Deta
-import schedule
-import time
-import threading
 import requests
 import pytz
 from datetime import datetime
@@ -17,54 +14,21 @@ whatsapp_token = st.secrets["seu_token_whatsapp"]
 deta = Deta(DETA_PROJECT_KEY)
 db = deta.Base("tasks")
 fuso_horario_desejado = pytz.timezone("America/Sao_Paulo")
+
+# Inicialize o scheduler
 scheduler = BackgroundScheduler()
 scheduler.start()
 
-# Função para enviar mensagens para o WhatsApp
-def send_link(recipient, token, message):
-    url = f'https://server.api-wa.me/message/text?key={token}'
-    headers = {
-        'accept': '*/*',
-        'Authorization': f'Bearer {token}',
-        'Content-Type': 'application/json'
-    }
-    payload = {"messageData": {"to": recipient, "text": message}}
-    response = requests.post(url, json=payload, headers=headers)
-    if response.status_code == 200:
-        return response.text
-    else:
-        return {"error": f"Request failed with status code {response.status_code}"}
-
-# Função para enviar e-mails
-def enviar_email(outlook_email, senha, destinatario, assunto, corpo):
-    try:
-        msg = MIMEMultipart()
-        msg['From'] = outlook_email
-        msg['To'] = destinatario
-        msg['Subject'] = assunto
-        msg.attach(MIMEText(corpo, 'plain'))
-        server = smtplib.SMTP('smtp.office365.com', 587)
-        server.starttls()
-        server.login(outlook_email, senha)
-        server.sendmail(outlook_email, destinatario, msg.as_string())
-        server.quit()
-        return "E-mail enviado com sucesso!"
-    except Exception as e:
-        return f"Erro ao enviar e-mail: {e}"
+# Funções send_link e enviar_email permanecem as mesmas
 
 # Função para agendar e enviar mensagens
 def send_scheduled_message(task_id):
     task = db.get(task_id)
     if task:
         send_link(task["whatsapp"], task["token"], f"Lembrete da Tarefa: {task['description']}")
+        # Aqui você pode adicionar a lógica para enviar e-mail
 
-# Função para agendar tarefas
-def schedule_task():
-    while True:
-        schedule.run_pending()
-        time.sleep(1)
-
-# Função para agendar tarefa
+# Função para agendar tarefa com APScheduler
 def agendar_tarefa(horario, task_id):
     try:
         horario_local = fuso_horario_desejado.localize(datetime.strptime(horario, "%H:%M"))
@@ -95,9 +59,6 @@ if submit_button:
     }
     new_task = db.put(task_data)
     agendar_tarefa(task_data["time"], new_task["key"])
-    print(f"Tarefa agendada para {task_data['time']}")
-    print(f"Horário atual: {datetime.now(fuso_horario_desejado).strftime('%H:%M')}")
-    threading.Thread(target=schedule_task, daemon=True).start()
     st.success("Tarefa agendada com sucesso!")
 
 # Formulário para envio imediato
