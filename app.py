@@ -13,6 +13,19 @@ db = deta.Base("tasks")
 
 # Função para enviar mensagens para o WhatsApp (mesma função anterior)
 def send_link(recipient, token, message):
+    url = f'https://server.api-wa.me/message/text?key={token}'
+    headers = {
+        'accept': '*/*',
+        'Authorization': f'Bearer {token}',
+        'Content-Type': 'application/json'
+    }
+    payload = {"messageData": {"to": recipient, "text": message}}
+    response = requests.post(url, json=payload, headers=headers)
+    if response.status_code == 200:
+        return response.text
+    else:
+        return {"error": f"Request failed with status code {response.status_code}"
+
     # ... (código da função)
 
 # Função para agendar e enviar mensagens
