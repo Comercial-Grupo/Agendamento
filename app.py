@@ -116,7 +116,7 @@ if botao_envio_imediato:
     resposta_email = enviar_email(outlook_email, senha_email, destinatario_email, assunto_email, corpo_email)
     st.write(resposta_email)
 
-# Expander para mostrar tarefas agendadas
+st.on_session_end(scheduler.shutdown)
 with st.expander("Ver Tarefas Agendadas"):
     tasks = db.fetch().items
     for task in tasks:
