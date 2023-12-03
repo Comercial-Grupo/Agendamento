@@ -2,3 +2,4 @@ streamlit
 deta
 requests
 schedule
+pytz
