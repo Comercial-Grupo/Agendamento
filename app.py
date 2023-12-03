@@ -50,33 +50,7 @@ def enviar_email(outlook_email, senha, destinatario, assunto, corpo):
     except Exception as e:
         return f"Erro ao enviar e-mail: {e}"
     
-# ... [Código anterior] ...
-
-with st.form("envio_imediato_form"):
-    st.write("Envio Imediato de Mensagem e E-mail")
-    destinatario_email = st.text_input("Destinatário do E-mail")
-    assunto_email = st.text_input("Assunto do E-mail")
-    corpo_email = st.text_area("Corpo do E-mail")
-    outlook_email = st.text_input("Seu E-mail do Outlook")
-    senha_email = st.text_input("Senha do E-mail", type="password")
-    botao_envio_imediato = st.form_submit_button("Enviar Agora")
-
-if botao_envio_imediato:
-    # Enviar WhatsApp
-    resposta_whatsapp = send_link(whatsapp, token, description)
-    st.write(resposta_whatsapp)
-
-    # Enviar E-mail
-    resposta_email = enviar_email(outlook_email, senha_email, destinatario_email, assunto_email, corpo_email)
-    st.write(resposta_email)
         
-
-
-
-
-
-
-
 
 # Função para enviar mensagens para o WhatsApp (mesma função anterior)
 def send_link(recipient, token, message):
@@ -113,6 +87,23 @@ def schedule_task():
 # Interface do Streamlit
 st.title("Agendador de Tarefas")
 
+with st.form("envio_imediato_form"):
+    st.write("Envio Imediato de Mensagem e E-mail")
+    destinatario_email = st.text_input("Destinatário do E-mail")
+    assunto_email = st.text_input("Assunto do E-mail")
+    corpo_email = st.text_area("Corpo do E-mail")
+    outlook_email = st.text_input("Seu E-mail do Outlook")
+    senha_email = st.text_input("Senha do E-mail", type="password")
+    botao_envio_imediato = st.form_submit_button("Enviar Agora")
+
+if botao_envio_imediato:
+    # Enviar WhatsApp
+    resposta_whatsapp = send_link(whatsapp, token, description)
+    st.write(resposta_whatsapp)
+
+    # Enviar E-mail
+    resposta_email = enviar_email(outlook_email, senha_email, destinatario_email, assunto_email, corpo_email)
+    st.write(resposta_email)
 with st.form("task_form"):
     description = st.text_input("Descrição da Tarefa")
     task_time = st.time_input("Horário da Tarefa")
