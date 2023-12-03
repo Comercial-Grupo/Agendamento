@@ -11,21 +11,18 @@ whatsapp_token = st.secrets["seu_token_whatsapp"]# Substitua com sua Project Key
 deta = Deta(DETA_PROJECT_KEY)
 db = deta.Base("tasks")
 
-import pytz
-from datetime import datetime
-
-# Suponha que você queira usar o fuso horário de São Paulo, Brasil
 fuso_horario_desejado = pytz.timezone("America/Sao_Paulo")
 
 def agendar_tarefa(horario, task_id):
-    # Converte o horário para o fuso horário desejado
-    horario_local = fuso_horario_desejado.localize(datetime.strptime(horario, "%H:%M"))
-    horario_utc = horario_local.astimezone(pytz.utc)
+    try:
+        # Certifique-se de que 'horario' está no formato 'HH:MM'
+        horario_local = fuso_horario_desejado.localize(datetime.strptime(horario, "%H:%M"))
+        horario_utc = horario_local.astimezone(pytz.utc)
 
-    # Agende a tarefa usando o horário em UTC
-    schedule.every().day.at(horario_utc.strftime("%H:%M")).do(send_scheduled_message, task_id=task_id)
-
-
+        # Agende a tarefa usando o horário em UTC
+        schedule.every().day.at(horario_utc.strftime("%H:%M")).do(send_scheduled_message, task_id=task_id)
+    except ValueError as e:
+        print(f"Erro ao converter o horário: {e}")
 
 
 
