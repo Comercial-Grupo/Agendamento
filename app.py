@@ -6,7 +6,7 @@ import threading
 import requests
 
 # Inicialize o Deta com sua Project Key
-deta_project_key = st.secrets["sua_project_key"]
+DETA_PROJECT_KEY = st.secrets["sua_project_key"]
 whatsapp_token = st.secrets["seu_token_whatsapp"]# Substitua com sua Project Key
 deta = Deta(DETA_PROJECT_KEY)
 db = deta.Base("tasks")
