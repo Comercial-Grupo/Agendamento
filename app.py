@@ -17,15 +17,6 @@ deta = Deta(DETA_PROJECT_KEY)
 db = deta.Base("tasks")
 fuso_horario_desejado = pytz.timezone("America/Sao_Paulo")
 
-# Função para agendar tarefa
-def agendar_tarefa(horario, task_id):
-    try:
-        horario_local = fuso_horario_desejado.localize(datetime.strptime(horario, "%H:%M"))
-        horario_utc = horario_local.astimezone(pytz.utc)
-        schedule.every().day.at(horario_utc.strftime("%H:%M")).do(send_scheduled_message, task_id=task_id)
-    except ValueError as e:
-        print(f"Erro ao converter o horário: {e}")
-
 # Função para enviar mensagens para o WhatsApp
 def send_link(recipient, token, message):
     url = f'https://server.api-wa.me/message/text?key={token}'
@@ -69,6 +60,15 @@ def schedule_task():
     while True:
         schedule.run_pending()
         time.sleep(1)
+
+# Função para agendar tarefa
+def agendar_tarefa(horario, task_id):
+    try:
+        horario_local = fuso_horario_desejado.localize(datetime.strptime(horario, "%H:%M"))
+        horario_utc = horario_local.astimezone(pytz.utc)
+        schedule.every().day.at(horario_utc.strftime("%H:%M")).do(send_scheduled_message, task_id=task_id)
+    except ValueError as e:
+        print(f"Erro ao converter o horário: {e}")
 
 # Interface do Streamlit
 st.title("Agendador de Tarefas")
@@ -118,5 +118,3 @@ with st.expander("Ver Tarefas Agendadas"):
     tasks = db.fetch().items
     for task in tasks:
         st.write(f"{task['description']} - Horário: {task['time']}")
-
-
