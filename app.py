@@ -11,6 +11,33 @@ whatsapp_token = st.secrets["seu_token_whatsapp"]# Substitua com sua Project Key
 deta = Deta(DETA_PROJECT_KEY)
 db = deta.Base("tasks")
 
+import pytz
+from datetime import datetime
+
+# Suponha que você queira usar o fuso horário de São Paulo, Brasil
+fuso_horario_desejado = pytz.timezone("America/Sao_Paulo")
+
+def agendar_tarefa(horario, task_id):
+    # Converte o horário para o fuso horário desejado
+    horario_local = fuso_horario_desejado.localize(datetime.strptime(horario, "%H:%M"))
+    horario_utc = horario_local.astimezone(pytz.utc)
+
+    # Agende a tarefa usando o horário em UTC
+    schedule.every().day.at(horario_utc.strftime("%H:%M")).do(send_scheduled_message, task_id=task_id)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # Função para enviar mensagens para o WhatsApp (mesma função anterior)
 def send_link(recipient, token, message):
     url = f'https://server.api-wa.me/message/text?key={token}'
@@ -63,9 +90,11 @@ if submit_button:
         "token": token
     }
     new_task = db.put(task_data)
-    schedule.every().day.at(task_data["time"]).do(send_scheduled_message, task_id=new_task["key"])
+    agendar_tarefa(task_data["time"], new_task["key"])
     threading.Thread(target=schedule_task, daemon=True).start()
     st.success("Tarefa agendada com sucesso!")
+
+
 
 # Expander para mostrar tarefas agendadas
 with st.expander("Ver Tarefas Agendadas"):
@@ -73,4 +102,6 @@ with st.expander("Ver Tarefas Agendadas"):
     for task in tasks:
         st.write(f"{task['description']} - Horário: {task['time']}")
 
-# Aqui você pode adicionar mais lógica para marcar tarefas como concluídas
+
+
+#Aqui você pode adicionar mais lógica para marcar tarefas como concluídas
