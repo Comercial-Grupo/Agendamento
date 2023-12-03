@@ -34,7 +34,7 @@ def send_link(recipient, token, message):
 def send_scheduled_message(task_id):
     task = db.get(task_id)
     if task:
-        send_link(task["whatsapp"], task["token"], f"Lembrete da Tarefa: {task['description']}")
+        send_link(task["whatsapp"],whatsapp_token, f"Lembrete da Tarefa: {task['description']}")
         # Adicione aqui a lógica para enviar e-mail
 
 # Função para agendar tarefas
