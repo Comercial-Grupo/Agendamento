@@ -1,16 +1,13 @@
-import streamlit as st
 from deta import Deta
 import requests
 import pytz
 from datetime import datetime
-import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
 from apscheduler.schedulers.background import BackgroundScheduler
+import time
 
-# Inicialização e Configuração
-DETA_PROJECT_KEY = st.secrets["sua_project_key"]
-whatsapp_token = st.secrets["seu_token_whatsapp"]
+# Configuração
+DETA_PROJECT_KEY = "sua_project_key"
+whatsapp_token = "seu_token_whatsapp"
 deta = Deta(DETA_PROJECT_KEY)
 db = deta.Base("tasks")
 fuso_horario_desejado = pytz.timezone("America/Sao_Paulo")
@@ -26,16 +23,22 @@ def send_scheduled_message(task_id):
     task = db.get(task_id)
     if task:
         send_link(task["whatsapp"], task["token"], f"Lembrete da Tarefa: {task['description']}")
-        # Aqui você pode adicionar a lógica para enviar e-mail
+        # Lógica para enviar e-mail
 
-# Função para agendar tarefa com APScheduler
-def agendar_tarefa(horario, task_id):
-    try:
+def agendar_tarefas():
+    tasks = db.fetch().items
+    for task in tasks:
+        horario = task['time']
+        task_id = task['key']
         horario_local = fuso_horario_desejado.localize(datetime.strptime(horario, "%H:%M"))
         horario_utc = horario_local.astimezone(pytz.utc)
         scheduler.add_job(send_scheduled_message, 'cron', day_of_week='mon-sun', hour=horario_utc.hour, minute=horario_utc.minute, args=[task_id])
-    except ValueError as e:
-        print(f"Erro ao converter o horário: {e}")
+
+agendar_tarefas()
+# Mantém o script rodando
+while True:
+    time.sleep(60)
+
 
 # Interface do Streamlit
 st.title("Agendador de Tarefas")
@@ -58,7 +61,6 @@ if submit_button:
         "token": token
     }
     new_task = db.put(task_data)
-    agendar_tarefa(task_data["time"], new_task["key"])
     st.success("Tarefa agendada com sucesso!")
 
 # Formulário para envio imediato
