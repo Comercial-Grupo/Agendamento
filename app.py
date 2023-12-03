@@ -131,6 +131,9 @@ if submit_button:
     }
     new_task = db.put(task_data)
     agendar_tarefa(task_data["time"], new_task["key"])
+    print(f"Tarefa agendada para {task_data['time']}")
+    print(f"Horário atual: {datetime.now(fuso_horario_desejado).strftime('%H:%M')}")
+
     threading.Thread(target=schedule_task, daemon=True).start()
     st.success("Tarefa agendada com sucesso!")
 
