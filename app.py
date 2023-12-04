@@ -37,7 +37,6 @@ def agendar_tarefas():
     except Exception as e:
         print(f"Erro ao buscar tarefas: {e}")
 
-
 agendar_tarefas()
 # Mantém o script rodando
 while True:
