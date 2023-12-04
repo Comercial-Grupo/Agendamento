@@ -26,13 +26,17 @@ def send_scheduled_message(task_id):
         # Lógica para enviar e-mail
 
 def agendar_tarefas():
-    tasks = db.fetch().items
-    for task in tasks:
-        horario = task['time']
-        task_id = task['key']
-        horario_local = fuso_horario_desejado.localize(datetime.strptime(horario, "%H:%M"))
-        horario_utc = horario_local.astimezone(pytz.utc)
-        scheduler.add_job(send_scheduled_message, 'cron', day_of_week='mon-sun', hour=horario_utc.hour, minute=horario_utc.minute, args=[task_id])
+    try:
+        tasks = db.fetch().items
+        for task in tasks:
+            horario = task['time']
+            task_id = task['key']
+            horario_local = fuso_horario_desejado.localize(datetime.strptime(horario, "%H:%M"))
+            horario_utc = horario_local.astimezone(pytz.utc)
+            scheduler.add_job(send_scheduled_message, 'cron', day_of_week='mon-sun', hour=horario_utc.hour, minute=horario_utc.minute, args=[task_id])
+    except Exception as e:
+        print(f"Erro ao buscar tarefas: {e}")
+
 
 agendar_tarefas()
 # Mantém o script rodando
